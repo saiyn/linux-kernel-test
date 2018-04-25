@@ -248,6 +248,24 @@ static int pciv_dmabuf_ops_mamp(struct dma_buf *dbuf, struct vm_area_struct *vma
 }
 
 
+static void pciv_dmabuf_ops_release(struct dma_buf *dbuf)
+{
+	struct pciv_buf *buf = dbuf->priv;
+	
+	if(atmoic_dec_and_test(&buf->refcount)){
+		if(1 == buf->buf_kalloc_flag){
+			if(buf->addr){
+				kfree(buf->addr);	
+			}else{
+					
+			}
+		}
+		
+		kfree(buf);
+	}
+	
+}
+
 static const struct dma_buf_ops pciv_dmabuf_ops = {
 	.attach = pciv_dmabuf_ops_attach,
 	.detach = pciv_dmabuf_ops_detach,
